@@ -1,70 +1,28 @@
-# Getting Started with Create React App
+# UmaStitcher!
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A completely serverless screenshot stitcher for Umamusume. Inspired by ssc.kitachan.black stitching tool which is gone to this date.
 
-## Available Scripts
+## FAQ
 
-In the project directory, you can run:
+### What do you mean by "serverless"?
 
-### `npm start`
+This project has been built with the idea of getting a standalone tool that doesn't require an operating server to compute image manipulation tasks. This also allows me to host this service without paying any dime, since [surge.sh](https://surge.sh) allows hosting any static web project for free. No server, free static web platform, no ads nor donations needed to run this.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Is this a copy of the "inspired" tool?
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+Sincerely said, no.
+After shutting down their service, the devs of the kitachan black tool released some Python code that allowed anyone to run their stitching program on their own. But these came with some issues for this project:
 
-### `npm test`
+- The Python program itself was based on OpenCV, a well-known computer vision library that makes advanted image computing a lot, lot easier. But its implementation in pure javascript was too heavy to load (= more waiting time to use the tool, which is not pretty) and also said to have some performance flaws. No stable & fast OpenCV for js, no interest in using it, so I couldn't really make any use of the code itself.
+- The used functions in the Python program included some operations which would be useful in photography manipulation, but could be a bit too overkill for stitching some flat 2D UI screenshots. I decided to write the pipeline myself to make some of the computation lighter. This doesn't mean my program is performing better than using a huge and widely maintained library though. I'm pretty sure there are better ways to optimize this, and any suggestions are welcomed.
+- In case you don't have the context yet, the kitachan black tool got voluntarily taken down by its owner, following a code stealing incident by a widely known japanese game guide company. To be as fair as possible on this matter, I decided not to import/transpose anything from the published Python code.
+- UmaStitcher will still be marked as "inspired" by the shut down one, since the program's base logic still relies on how the previous tool worked.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### I can't use your tool! Please fix it!
 
-### `npm run build`
+This is a simple project I made on my free time since I really wanted the screenshot stitcher back online. If there's any major issues, I could take a look to it but I won't promise anything about any patches or updates. Let me live.
+As a reminder, this is a serverless tool; so all the computation work will be done on your device. If you have a phone from 10 years ago, or a weird device you got from a shady brand, don't expect this to work.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### How can I contact you directly?
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Don't - just use the issues tab if you need anything. But again, I might or might not look at it.
