@@ -343,12 +343,12 @@ const cropBottomFrames = async (images, bottomFrameCoords, preferences) => {
   }
 
   // for testing in dev env
-  showPattern(
+  /*showPattern(
     images[images.length - 1],
     patternMap,
     patternXOffset,
     patternYOffset
-  );
+  );*/
 
   if (preferences.keepStats) {
     const lastIndex = cropYValues.length - 1;
