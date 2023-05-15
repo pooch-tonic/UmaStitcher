@@ -26,32 +26,32 @@ const conf = {
   /**
    * percentage of X offset to start pattern sampling based on the given image
    *
-   * since the bottom frame is first cut out before being sent to the sampling
+   * since the bottom frame is first detected before being sent to the sampling
    * function, please take in account the frame dimensions as a base reference
    */
-  patternSampleXOffset: 0.25,
+  patternSampleXOffset: 0.04,
   /**
    * percentage width of sample, since specifying it with pixels might go wrong
    * with different resolutions
    *
    * please take in account the bottom frame dimensions as a base reference
    */
-  patternSampleWidth: 0.55,
+  patternSampleWidth: 0.9,
   /**
    * percentage height of sample, since specifying it with pixels might go wrong
    * with different resolutions
    *
    * please take in account the bottom frame dimensions as a base reference
    */
-  patternSampleHeight: 0.11,
+  patternSampleHeight: 0.12,
   /**
    * number of columns in the pattern = amount of pixel samples in one row
    */
-  sampleCols: 16,
+  sampleCols: 48,
   /**
    * number of rows in the pattern = amount of pixel samples in one col
    */
-  sampleRows: 4,
+  sampleRows: 14,
 };
 
 const init = () => {
@@ -273,6 +273,12 @@ const findPattern = (
     // for debug & perf check
     // console.log(currY, passes, res);
   }
+
+  if (!res) {
+    res = {
+      y: 0,
+    };
+  }
   return res;
 };
 
@@ -336,6 +342,14 @@ const cropBottomFrames = async (images, bottomFrameCoords, preferences) => {
     cropYValues.push(patternMatch.y);
   }
 
+  // for testing in dev env
+  showPattern(
+    images[images.length - 1],
+    patternMap,
+    patternXOffset,
+    patternYOffset
+  );
+
   if (preferences.keepStats) {
     const lastIndex = cropYValues.length - 1;
     const last = cropYValues.pop();
@@ -368,9 +382,6 @@ const cropBottomFrames = async (images, bottomFrameCoords, preferences) => {
       );
     });
   }
-
-  // for testing in dev env
-  // showPattern(bottomFrames[0], patternMap, patternXOffset, patternYOffset);
 };
 
 // read image buffers as JIMP images then extract bottom frames and finally stitch them together
