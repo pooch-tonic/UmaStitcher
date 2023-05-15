@@ -23,24 +23,29 @@ function Copyright() {
     <React.Fragment>
       <Typography variant="body2" color="text.secondary" align="center">
         {"UmaStitcher! - Developed by "}
-        <Link color="inherit" href="https://github.com/pooch-tonic">
+        <Link
+          color="inherit"
+          href="https://github.com/pooch-tonic"
+          target="_blank"
+        >
           pooch-tonic
         </Link>{" "}
         -{" "}
         <Link
           color="inherit"
           href="https://github.com/pooch-tonic/umastitcher#umastitcher"
+          target="_blank"
         >
           GitHub
         </Link>
       </Typography>
       <br />
       <Typography variant="body2" color="text.secondary" align="center">
-        <RouterLink color="inherit" to="/about" target="_blank">
+        <RouterLink color="inherit" to="/about">
           About
         </RouterLink>{" "}
         -{" "}
-        <RouterLink color="inherit" to="/privacy-policy" target="_blank">
+        <RouterLink color="inherit" to="/privacy-policy">
           Privacy Policy
         </RouterLink>
       </Typography>

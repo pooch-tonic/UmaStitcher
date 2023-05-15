@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
 import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
@@ -32,21 +33,24 @@ const router = createBrowserRouter([
   },
 ]);
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
-  <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AppBar
-        position="absolute"
-        color="default"
-        elevation={0}
-        sx={{
-          position: "relative",
-          borderBottom: (t) => `1px solid ${t.palette.divider}`,
-        }}
-      >
-        <Toolbar>
+const MyAppBar = () => {
+  return (
+    <AppBar
+      position="absolute"
+      color="default"
+      elevation={0}
+      sx={{
+        position: "relative",
+        borderBottom: (t) => `1px solid ${t.palette.divider}`,
+      }}
+    >
+      <Toolbar>
+        <Box
+          sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
+          onClick={() => {
+            window.location = "/";
+          }}
+        >
           <Avatar
             sx={{ mr: 1 }}
             alt="UmaInfoMerger logo"
@@ -56,8 +60,18 @@ root.render(
           <Typography variant="h6" color="inherit" noWrap>
             UmaStitcher!
           </Typography>
-        </Toolbar>
-      </AppBar>
+        </Box>
+      </Toolbar>
+    </AppBar>
+  );
+};
+
+const root = ReactDOM.createRoot(document.getElementById("root"));
+root.render(
+  <React.StrictMode>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <MyAppBar />
       <RouterProvider router={router} />
     </ThemeProvider>
   </React.StrictMode>
