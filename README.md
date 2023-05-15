@@ -6,7 +6,7 @@ A completely serverless screenshot stitcher for Umamusume. Inspired by ssc.kitac
 
 ### What do you mean by "serverless"?
 
-This project has been built with the idea of getting a standalone tool that doesn't require an operating server to compute image manipulation tasks. This also allows me to host this service without paying any dime, since [surge.sh](https://surge.sh) allows hosting any static web project for free. No server, free static web platform, no ads nor donations needed to run this.
+This project has been built with the idea of getting a standalone tool that doesn't require any backend operating server to compute image manipulation tasks. This also allows me to host this service without paying a single dime, since [surge.sh](https://surge.sh) allows the hosting of static web projects for free. No server, a free static web platform, so no ads nor donations needed to run this.
 
 ### Is this a copy of the "inspired" tool?
 
@@ -20,9 +20,9 @@ After shutting down their service, the devs of the kitachan black tool released 
 
 ### I can't use your tool! Please fix it!
 
-This is a simple project I made on my free time since I really wanted the screenshot stitcher back online. If there's any major issues, I could take a look to it but I won't promise anything about any patches or updates. Let me live.
+This is a simple project I made on my free time since I really wanted a working screenshot stitcher back online. If there's any major issues, I could take a look to it but I won't promise anything about any patches or updates. Let me live.
 As a reminder, this is a serverless tool; so all the computation work will be done on your device. If you have a phone from 10 years ago, or a weird device you got from a shady brand, don't expect this to work.
 
 ### How can I contact you directly?
 
-Don't - just use the issues tab if you need anything. But again, I might or might not look at it.
+Don't - just use the issues tab if you absolutely need anything. But again, I might or might not look at it. However if you really need to contact me for any professional subject, please send a mail to [poochtonic@gmail.com](mailto:poochtonic@gmail.com). Thank you.
