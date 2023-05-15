@@ -1,21 +1,18 @@
 import * as React from "react";
 import "jimp";
-import AppBar from "@mui/material/AppBar";
-import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
-import CssBaseline from "@mui/material/CssBaseline";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
-import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import UploadIcon from "@mui/icons-material/Upload";
 import ViewAgendaIcon from "@mui/icons-material/ViewAgenda";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
+
 import { merge } from "./merger";
 
 function Copyright() {
@@ -24,12 +21,17 @@ function Copyright() {
       {"UmaStitcher! - Developed by "}
       <Link color="inherit" href="https://github.com/pooch-tonic">
         pooch-tonic
+      </Link>{" "}
+      -{" "}
+      <Link
+        color="inherit"
+        href="https://github.com/pooch-tonic/umastitcher#umastitcher"
+      >
+        GitHub
       </Link>
     </Typography>
   );
 }
-
-const theme = createTheme();
 
 function App() {
   const [result, setResult] = React.useState(null);
@@ -71,7 +73,7 @@ function App() {
         loadFile(0, len - 1, []);
       }, 100);
     } else {
-      console.log("no enough images to merge");
+      console.log("no enough images to stitch");
     }
   };
 
@@ -110,11 +112,16 @@ function App() {
     }
   };
 
+  // helps correcting the upload order on devices that don't allow order selection
+  const handleInvert = () => {
+    setPreviewUrls([...previewUrls].reverse());
+  };
+
   const renderBottomView = () => {
     if (!!result) {
       return (
         <Box sx={{ mt: 2 }}>
-          <img src={result} alt="Merge result" loading="lazy" width="100%" />
+          <img src={result} alt="Stitch result" loading="lazy" width="100%" />
         </Box>
       );
     } else if (previewUrls?.length > 0) {
@@ -136,54 +143,41 @@ function App() {
   };
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <AppBar
-        position="absolute"
-        color="default"
-        elevation={0}
-        sx={{
-          position: "relative",
-          borderBottom: (t) => `1px solid ${t.palette.divider}`,
-        }}
+    <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
+      <Paper
+        variant="outlined"
+        sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
       >
-        <Toolbar>
-          <Avatar
-            sx={{ mr: 1 }}
-            alt="UmaInfoMerger logo"
-            src="/logo256.png"
-            variant="square"
+        <Box sx={{ display: "flex", justifyContent: "center" }}>
+          <input
+            accept="image/*"
+            style={{ display: "none" }}
+            id="raised-button-file"
+            multiple
+            type="file"
+            onInput={handleUpload}
           />
-          <Typography variant="h6" color="inherit" noWrap>
-            UmaStitcher!
-          </Typography>
-        </Toolbar>
-      </AppBar>
-      <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
-        <Paper
-          variant="outlined"
-          sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
-        >
-          <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <input
-              accept="image/*"
-              style={{ display: "none" }}
-              id="raised-button-file"
-              multiple
-              type="file"
-              onInput={handleUpload}
-            />
-            <label htmlFor="raised-button-file">
-              <Button variant="outlined" component="span" disabled={uploading}>
-                {uploading ? (
-                  <CircularProgress size={24} sx={{ mr: 1 }} />
-                ) : (
-                  <UploadIcon sx={{ mr: 1 }} />
-                )}
-                {previewUrls?.length > 0 ? "Reupload" : "Upload"}
+          <label htmlFor="raised-button-file">
+            <Button variant="outlined" component="span" disabled={uploading}>
+              {uploading ? (
+                <CircularProgress size={24} sx={{ mr: 1 }} />
+              ) : (
+                <UploadIcon sx={{ mr: 1 }} />
+              )}
+              {previewUrls?.length > 0 ? "Reupload" : "Upload"}
+            </Button>
+          </label>
+          {!result && previewUrls?.length > 1 && (
+            <React.Fragment>
+              <Button
+                variant="contained"
+                sx={{ ml: 2 }}
+                onClick={handleInvert}
+                disabled={merging}
+              >
+                <SwapHorizIcon sx={{ mr: 1 }} />
+                Reverse
               </Button>
-            </label>
-            {!result && previewUrls?.length > 1 && (
               <Button
                 variant="contained"
                 sx={{ ml: 2 }}
@@ -195,15 +189,15 @@ function App() {
                 ) : (
                   <ViewAgendaIcon sx={{ mr: 1 }} />
                 )}
-                Merge
+                Stitch
               </Button>
-            )}
-          </Box>
-          {renderBottomView()}
-        </Paper>
-        <Copyright />
-      </Container>
-    </ThemeProvider>
+            </React.Fragment>
+          )}
+        </Box>
+        {renderBottomView()}
+      </Paper>
+      <Copyright />
+    </Container>
   );
 }
 
