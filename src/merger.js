@@ -300,15 +300,17 @@ const createPatternMap = (baseImageWidth, baseImageHeight) => {
 };
 
 // use sampling to get overlapping parts between frames and crop accordingly
-const cropBottomFrames = async (images, bottomFrameCoords) => {
+const cropBottomFrames = async (images, bottomFrameCoords, preferences) => {
   const { width, height, leftX, rightX, topY, bottomY } = bottomFrameCoords;
   const patternMap = createPatternMap(width, height);
   const patternXOffset = Math.round(width * conf.patternSampleXOffset + leftX);
   // used when getting most-bottom pattern
   const patternYOffset = bottomY - patternMap.actualHeight;
+  const { width: imageWidth, height: imageHeight } = images[0].bitmap;
 
   // holds Y values to where to crop (= discard top part of frame) for each image, knowing the first image has to be full
-  const cropYValues = [topY];
+  // Added a conditional value for users who want to keep top stats part as well
+  const cropYValues = [preferences.keepStats ? 0 : topY];
 
   // use pattern matching to know wheere to crop for stitching
   for (let i = 1; i < images.length; i++) {
@@ -334,21 +336,45 @@ const cropBottomFrames = async (images, bottomFrameCoords) => {
     cropYValues.push(patternMatch.y);
   }
 
-  cropYValues.forEach((y, i) => {
-    images[i].crop(
-      leftX,
-      y + patternMap.actualHeight,
-      width,
-      bottomY - y - patternMap.actualHeight
+  if (preferences.keepStats) {
+    const lastIndex = cropYValues.length - 1;
+    const last = cropYValues.pop();
+
+    images[0].crop(0, 0, imageWidth, bottomY);
+    cropYValues.forEach((y, i) => {
+      images[i].crop(
+        0,
+        y + patternMap.actualHeight,
+        imageWidth,
+        bottomY - y - patternMap.actualHeight
+      );
+    });
+    images[lastIndex].crop(
+      0,
+      last + patternMap.actualHeight,
+      imageWidth,
+      imageHeight - last - patternMap.actualHeight
     );
-  });
+  } else {
+    const first = cropYValues.shift();
+
+    images[0].crop(leftX, first, width, bottomY - first);
+    cropYValues.forEach((y, i) => {
+      images[i + 1].crop(
+        leftX,
+        y + patternMap.actualHeight,
+        width,
+        bottomY - y - patternMap.actualHeight
+      );
+    });
+  }
 
   // for testing in dev env
   // showPattern(bottomFrames[0], patternMap, patternXOffset, patternYOffset);
 };
 
 // read image buffers as JIMP images then extract bottom frames and finally stitch them together
-const combineImages = async (images) => {
+const combineImages = async (images, preferences) => {
   const jimpImages = await Promise.all(
     images.map(async (currentImage) => {
       const currentJimpImage = await Jimp.read(currentImage);
@@ -357,7 +383,7 @@ const combineImages = async (images) => {
   );
   const bottomFrameCoords = getBottomFrameCoords(jimpImages[0]);
 
-  cropBottomFrames(jimpImages, bottomFrameCoords);
+  cropBottomFrames(jimpImages, bottomFrameCoords, preferences);
 
   const finalSize = {
     w: jimpImages[0].bitmap.width,
@@ -390,8 +416,8 @@ const combineImages = async (images) => {
 };
 
 // exposed merge function to call the stitching function then convert the resulting JIMP image to base64
-export const merge = async (images) => {
-  const resultJimpImage = await combineImages(images);
+export const merge = async (images, preferences) => {
+  const resultJimpImage = await combineImages(images, preferences);
   const resultImage = await resultJimpImage.getBase64Async(Jimp.AUTO);
   return resultImage;
 };

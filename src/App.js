@@ -5,10 +5,12 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import Container from "@mui/material/Container";
+import FormControlLabel from "@mui/material/FormControlLabel";
 import ImageList from "@mui/material/ImageList";
 import ImageListItem from "@mui/material/ImageListItem";
 import Link from "@mui/material/Link";
 import Paper from "@mui/material/Paper";
+import Switch from "@mui/material/Switch";
 import Typography from "@mui/material/Typography";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import UploadIcon from "@mui/icons-material/Upload";
@@ -48,9 +50,12 @@ function App() {
   const [previewUrls, setPreviewUrls] = React.useState([]);
   const [uploading, setUploading] = React.useState(false);
   const [merging, setMerging] = React.useState(false);
+  const [keepStats, setKeepStats] = React.useState(true);
 
   const computeResult = async (imageBuffers) => {
-    const res = await merge(imageBuffers);
+    const res = await merge(imageBuffers, {
+      keepStats,
+    });
     setResult(res);
     setMerging(false);
   };
@@ -124,6 +129,7 @@ function App() {
   // helps correcting the upload order on devices that don't allow order selection
   const handleInvert = () => {
     setPreviewUrls([...previewUrls].reverse());
+    setRawFiles([...rawFiles].reverse());
   };
 
   const renderBottomView = () => {
@@ -157,7 +163,15 @@ function App() {
         variant="outlined"
         sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
       >
-        <Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            flexWrap: "wrap",
+            rowGap: "10px",
+            columnGap: "15px",
+          }}
+        >
           <input
             accept="image/*"
             style={{ display: "none" }}
@@ -179,8 +193,7 @@ function App() {
           {!result && previewUrls?.length > 1 && (
             <React.Fragment>
               <Button
-                variant="contained"
-                sx={{ ml: 2 }}
+                variant="outlined"
                 onClick={handleInvert}
                 disabled={merging}
               >
@@ -189,7 +202,6 @@ function App() {
               </Button>
               <Button
                 variant="contained"
-                sx={{ ml: 2 }}
                 onClick={handleMerge}
                 disabled={merging}
               >
@@ -203,6 +215,27 @@ function App() {
             </React.Fragment>
           )}
         </Box>
+        {!result && previewUrls?.length > 1 && (
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              rowGap: "10px",
+              columnGap: "15px",
+            }}
+          >
+            <hr />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={keepStats}
+                  onChange={(e) => setKeepStats(e.target.checked)}
+                />
+              }
+              label="Keep all screen contents"
+            />
+          </Box>
+        )}
         {renderBottomView()}
       </Paper>
       <Copyright />

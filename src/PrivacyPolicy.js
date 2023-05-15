@@ -75,7 +75,7 @@ const PrivacyPolicy = () => (
       <h2>Contact</h2>
       <p>
         If you have any questions or concerns about this Privacy Policy or the
-        data practices of UmaStitcher!, please contact us at{" "}
+        data practices of UmaStitcher!, please contact{" "}
         <a href="mailto:poochtonic@gmail.com">poochtonic@gmail.com</a>.
       </p>
     </Paper>
