@@ -8,6 +8,7 @@ import CssBaseline from "@mui/material/CssBaseline";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import App from "./App";
+import About from "./About";
 import PrivacyPolicy from "./PrivacyPolicy";
 import reportWebVitals from "./reportWebVitals";
 import ReactGA from "react-ga4";
@@ -23,7 +24,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/about",
-    element: <App />,
+    element: <About />,
   },
   {
     path: "/privacy-policy",

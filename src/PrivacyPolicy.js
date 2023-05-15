@@ -52,7 +52,11 @@ const PrivacyPolicy = () => (
         information collected by Google Analytics is subject to Google's policy.
         For more information on Google's data retention practices, please refer
         to{" "}
-        <a href="https://policies.google.com/privacy" target="_blank">
+        <a
+          href="https://policies.google.com/privacy"
+          target="_blank"
+          rel="noreferrer"
+        >
           Google's privacy policy
         </a>
         .

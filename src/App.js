@@ -36,7 +36,11 @@ function Copyright() {
       </Typography>
       <br />
       <Typography variant="body2" color="text.secondary" align="center">
-        <RouterLink color="inherit" to="/privacy-policy">
+        <RouterLink color="inherit" to="/about" target="_blank">
+          About
+        </RouterLink>{" "}
+        -{" "}
+        <RouterLink color="inherit" to="/privacy-policy" target="_blank">
           Privacy Policy
         </RouterLink>
       </Typography>
