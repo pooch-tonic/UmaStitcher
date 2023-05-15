@@ -1,5 +1,6 @@
 import * as React from "react";
 import "jimp";
+import { Link as RouterLink } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -17,19 +18,27 @@ import { merge } from "./merger";
 
 function Copyright() {
   return (
-    <Typography variant="body2" color="text.secondary" align="center">
-      {"UmaStitcher! - Developed by "}
-      <Link color="inherit" href="https://github.com/pooch-tonic">
-        pooch-tonic
-      </Link>{" "}
-      -{" "}
-      <Link
-        color="inherit"
-        href="https://github.com/pooch-tonic/umastitcher#umastitcher"
-      >
-        GitHub
-      </Link>
-    </Typography>
+    <React.Fragment>
+      <Typography variant="body2" color="text.secondary" align="center">
+        {"UmaStitcher! - Developed by "}
+        <Link color="inherit" href="https://github.com/pooch-tonic">
+          pooch-tonic
+        </Link>{" "}
+        -{" "}
+        <Link
+          color="inherit"
+          href="https://github.com/pooch-tonic/umastitcher#umastitcher"
+        >
+          GitHub
+        </Link>
+      </Typography>
+      <br />
+      <Typography variant="body2" color="text.secondary" align="center">
+        <RouterLink color="inherit" to="/privacy-policy">
+          Privacy Policy
+        </RouterLink>
+      </Typography>
+    </React.Fragment>
   );
 }
 
