@@ -228,6 +228,20 @@ const showPattern = (image, patternMap, offsetX = 0, offsetY = 0) => {
   });
 };
 
+// implement a custom interpretation of SAD algorithm
+const computeSAD = (targetPixelRGBA, currentPixelRGBA) =>
+  Math.abs(targetPixelRGBA.r - currentPixelRGBA.r) +
+  Math.abs(targetPixelRGBA.g - currentPixelRGBA.g) +
+  Math.abs(targetPixelRGBA.b - currentPixelRGBA.b) +
+  Math.abs(targetPixelRGBA.a - currentPixelRGBA.a);
+
+// custom SSD algorithm hoping this would reduce any wrong detection occurences
+const computeSSD = (targetPixelRGBA, currentPixelRGBA) =>
+  Math.pow(targetPixelRGBA.r - currentPixelRGBA.r, 2) +
+  Math.pow(targetPixelRGBA.g - currentPixelRGBA.g, 2) +
+  Math.pow(targetPixelRGBA.b - currentPixelRGBA.b, 2) +
+  Math.pow(targetPixelRGBA.a - currentPixelRGBA.a, 2);
+
 // look for the pattern by keeping the same X coord and moving on the Y axis from top (0) to given Y limit
 // return a value between 0 and image height - pattern height if a match is found, otherwise return -1
 const findPattern = (
@@ -236,13 +250,14 @@ const findPattern = (
   targetPattern,
   baseX = 0,
   baseY = 0,
-  limitY
+  limitY,
+  preferences
 ) => {
-  // implement a custom interpretation of SAD algorithm, could be switched to SSD if not enough
   let res = null;
+  const diffFunction = preferences.useSSD ? computeSSD : computeSAD;
 
   for (let currY = baseY; currY < limitY; currY++) {
-    let sad = 0;
+    let diff = 0;
     // dev perf test
     // let passes = 0;
 
@@ -254,12 +269,9 @@ const findPattern = (
       if (currentPixel !== targetPattern[i]) {
         const currentPixelRGBA = Jimp.intToRGBA(currentPixel);
         const targetPixelRGBA = Jimp.intToRGBA(targetPattern[i]);
-        sad +=
-          Math.abs(targetPixelRGBA.r - currentPixelRGBA.r) +
-          Math.abs(targetPixelRGBA.g - currentPixelRGBA.g) +
-          Math.abs(targetPixelRGBA.b - currentPixelRGBA.b) +
-          Math.abs(targetPixelRGBA.a - currentPixelRGBA.a);
-        if (res && sad > res.sad) {
+        diff += diffFunction(targetPixelRGBA, currentPixelRGBA);
+
+        if (res && diff > res.diff) {
           // stop the search if the error gets bigger than what's already on record
           return false;
         }
@@ -267,8 +279,8 @@ const findPattern = (
       // image.setPixelColor(65535, x + baseX, y + currY);
       return true;
     });
-    if (!res || sad < res.sad) {
-      res = { y: currY, sad };
+    if (!res || diff < res.diff) {
+      res = { y: currY, diff };
     }
     // for debug & perf check
     // console.log(currY, passes, res);
@@ -336,7 +348,8 @@ const cropBottomFrames = async (images, bottomFrameCoords, preferences) => {
       prevBottomPattern,
       patternXOffset,
       topY,
-      patternYOffset
+      patternYOffset,
+      preferences
     );
 
     cropYValues.push(patternMatch.y);

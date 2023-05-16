@@ -60,6 +60,7 @@ function App() {
   const [uploading, setUploading] = React.useState(false);
   const [merging, setMerging] = React.useState(false);
   const [keepStats, setKeepStats] = React.useState(true);
+  const [useSSD, setUseSSD] = React.useState(true);
 
   const computeResult = async (imageBuffers) => {
     const res = await merge(imageBuffers, {
@@ -242,6 +243,15 @@ function App() {
                 />
               }
               label="Keep all screen contents"
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={useSSD}
+                  onChange={(e) => setUseSSD(e.target.checked)}
+                />
+              }
+              label="Stricter stitching function"
             />
           </Box>
         )}
