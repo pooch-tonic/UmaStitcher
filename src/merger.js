@@ -43,15 +43,15 @@ const conf = {
    *
    * please take in account the bottom frame dimensions as a base reference
    */
-  patternSampleHeight: 0.12,
+  patternSampleHeight: 0.11,
   /**
    * number of columns in the pattern = amount of pixel samples in one row
    */
-  sampleCols: 48,
+  sampleCols: 32,
   /**
    * number of rows in the pattern = amount of pixel samples in one col
    */
-  sampleRows: 14,
+  sampleRows: 12,
 };
 
 const init = () => {
