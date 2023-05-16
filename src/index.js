@@ -15,6 +15,8 @@ import reportWebVitals from "./reportWebVitals";
 import ReactGA from "react-ga4";
 
 ReactGA.initialize("G-EJG37MLHZN");
+// To be GDPR compliant
+ReactGA.set({ anonymizeIp: true });
 
 const theme = createTheme();
 
