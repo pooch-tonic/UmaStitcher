@@ -13,7 +13,9 @@ import Paper from "@mui/material/Paper";
 import Switch from "@mui/material/Switch";
 import Typography from "@mui/material/Typography";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-import UploadIcon from "@mui/icons-material/Upload";
+import ClearIcon from "@mui/icons-material/Clear";
+import AddIcon from "@mui/icons-material/Add";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import ViewAgendaIcon from "@mui/icons-material/ViewAgenda";
 
 import { merge } from "./merger";
@@ -107,9 +109,8 @@ function App() {
       setUploading(true);
       const len = files.length;
       if (len > 0) {
-        setPreviewUrls([]);
         setResult(null);
-        setRawFiles([...files]);
+        setRawFiles([...rawFiles, ...files]);
         const reader = new FileReader();
 
         // Need to make sure images are loaded in input order in sync
@@ -119,7 +120,7 @@ function App() {
             loadedUrls.push(reader.result);
             // if last image has been loaded
             if (index === maxIndex) {
-              setPreviewUrls(loadedUrls);
+              setPreviewUrls([...previewUrls, ...loadedUrls]);
               setUploading(false);
             } else {
               loadFile(index + 1, maxIndex, loadedUrls);
@@ -134,6 +135,12 @@ function App() {
     } else {
       console.log("no files");
     }
+  };
+
+  const handleClear = () => {
+    setRawFiles([]);
+    setPreviewUrls([]);
+    setResult(null);
   };
 
   // helps correcting the upload order on devices that don't allow order selection
@@ -182,26 +189,48 @@ function App() {
             columnGap: "15px",
           }}
         >
-          <input
-            accept="image/*"
-            style={{ display: "none" }}
-            id="raised-button-file"
-            multiple
-            type="file"
-            onInput={handleUpload}
-          />
-          <label htmlFor="raised-button-file">
-            <Button variant="outlined" component="span" disabled={uploading}>
-              {uploading ? (
-                <CircularProgress size={24} sx={{ mr: 1 }} />
-              ) : (
-                <UploadIcon sx={{ mr: 1 }} />
-              )}
-              {previewUrls?.length > 0 ? "Reupload" : "Upload"}
+          {result && (
+            <Button variant="outlined" onClick={handleClear} disabled={merging}>
+              <RestartAltIcon sx={{ mr: 1 }} />
+              Reset
             </Button>
-          </label>
+          )}
+          {!result && (
+            <React.Fragment>
+              <input
+                accept="image/*"
+                style={{ display: "none" }}
+                id="raised-button-file"
+                multiple
+                type="file"
+                onInput={handleUpload}
+              />
+              <label htmlFor="raised-button-file">
+                <Button
+                  variant="outlined"
+                  component="span"
+                  disabled={uploading}
+                >
+                  {uploading ? (
+                    <CircularProgress size={24} sx={{ mr: 1 }} />
+                  ) : (
+                    <AddIcon sx={{ mr: 1 }} />
+                  )}
+                  Add images
+                </Button>
+              </label>
+            </React.Fragment>
+          )}
           {!result && previewUrls?.length > 1 && (
             <React.Fragment>
+              <Button
+                variant="outlined"
+                onClick={handleClear}
+                disabled={merging}
+              >
+                <ClearIcon sx={{ mr: 1 }} />
+                Clear
+              </Button>
               <Button
                 variant="outlined"
                 onClick={handleInvert}
