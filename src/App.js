@@ -1,64 +1,21 @@
 import * as React from "react";
-import "jimp";
-import { Link as RouterLink } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
-import Container from "@mui/material/Container";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import ImageList from "@mui/material/ImageList";
-import ImageListItem from "@mui/material/ImageListItem";
-import Link from "@mui/material/Link";
-import Paper from "@mui/material/Paper";
 import Switch from "@mui/material/Switch";
-import Typography from "@mui/material/Typography";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 import ClearIcon from "@mui/icons-material/Clear";
 import AddIcon from "@mui/icons-material/Add";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
 import ViewAgendaIcon from "@mui/icons-material/ViewAgenda";
-
+import ImageGrid from "./ImageGrid";
 import { merge } from "./merger";
-
-function Copyright() {
-  return (
-    <React.Fragment>
-      <Typography variant="body2" color="text.secondary" align="center">
-        {"UmaStitcher! - Developed by "}
-        <Link
-          color="inherit"
-          href="https://github.com/pooch-tonic"
-          target="_blank"
-        >
-          pooch-tonic
-        </Link>{" "}
-        -{" "}
-        <Link
-          color="inherit"
-          href="https://github.com/pooch-tonic/umastitcher#umastitcher"
-          target="_blank"
-        >
-          GitHub
-        </Link>
-      </Typography>
-      <br />
-      <Typography variant="body2" color="text.secondary" align="center">
-        <RouterLink color="inherit" to="/about">
-          About
-        </RouterLink>{" "}
-        -{" "}
-        <RouterLink color="inherit" to="/privacy-policy">
-          Privacy Policy
-        </RouterLink>
-      </Typography>
-    </React.Fragment>
-  );
-}
 
 function App() {
   const [result, setResult] = React.useState(null);
-  const [rawFiles, setRawFiles] = React.useState([]);
-  const [previewUrls, setPreviewUrls] = React.useState([]);
+  const [files, setFiles] = React.useState([]);
   const [uploading, setUploading] = React.useState(false);
   const [merging, setMerging] = React.useState(false);
   const [keepStats, setKeepStats] = React.useState(true);
@@ -73,7 +30,7 @@ function App() {
   };
 
   const handleMerge = async () => {
-    const len = rawFiles?.length;
+    const len = files?.length;
     if (len > 1) {
       setMerging(true);
       setResult(null);
@@ -94,7 +51,7 @@ function App() {
               loadFile(index + 1, maxIndex, loadedUrls);
             }
           };
-          reader.readAsArrayBuffer(rawFiles[index]);
+          reader.readAsArrayBuffer(files[index].raw);
         };
         loadFile(0, len - 1, []);
       }, 100);
@@ -104,49 +61,52 @@ function App() {
   };
 
   const handleUpload = (event) => {
-    const files = event?.target?.files;
-    if (files) {
+    const uploadedFiles = [...event?.target?.files];
+    if (uploadedFiles) {
       setUploading(true);
-      const len = files.length;
+      const len = uploadedFiles.length;
       if (len > 0) {
         setResult(null);
-        setRawFiles([...rawFiles, ...files]);
         const reader = new FileReader();
 
         // Need to make sure images are loaded in input order in sync
         // FileReaderSync not available so made it by hand recursively with the onloadend event
         const loadFile = (index, maxIndex, loadedUrls) => {
           reader.onloadend = () => {
-            loadedUrls.push(reader.result);
+            loadedUrls.push({
+              id: uuidv4(),
+              content: reader.result,
+              raw: uploadedFiles[index],
+            });
             // if last image has been loaded
             if (index === maxIndex) {
-              setPreviewUrls([...previewUrls, ...loadedUrls]);
+              setFiles([...files, ...loadedUrls]);
               setUploading(false);
             } else {
               loadFile(index + 1, maxIndex, loadedUrls);
             }
           };
-          reader.readAsDataURL(files[index]);
+          reader.readAsDataURL(uploadedFiles[index]);
         };
         loadFile(0, len - 1, []);
       } else {
         console.log("0 files were uploaded.");
       }
+      event.target.files = null;
+      event.target.value = null;
     } else {
       console.log("no files");
     }
   };
 
   const handleClear = () => {
-    setRawFiles([]);
-    setPreviewUrls([]);
+    setFiles([]);
     setResult(null);
   };
 
   // helps correcting the upload order on devices that don't allow order selection
   const handleInvert = () => {
-    setPreviewUrls([...previewUrls].reverse());
-    setRawFiles([...rawFiles].reverse());
+    setFiles([...files].reverse());
   };
 
   const renderBottomView = () => {
@@ -156,138 +116,123 @@ function App() {
           <img src={result} alt="Stitch result" loading="lazy" width="100%" />
         </Box>
       );
-    } else if (previewUrls?.length > 0) {
+    } else if (files?.length > 0) {
       return (
-        <ImageList sx={{ mt: 2 }} cols={3}>
-          {" "}
-          {previewUrls.map((previewUrl, index) => (
-            <ImageListItem key={previewUrl}>
-              <img
-                src={previewUrl}
-                alt={`preview of uploaded screenshot no. ${index + 1}`}
-                loading="lazy"
-              />
-            </ImageListItem>
-          ))}
-        </ImageList>
+        <ImageGrid
+          images={files}
+          updateImages={(newImages) => setFiles(newImages)}
+        />
       );
     }
   };
 
   return (
-    <Container component="main" maxWidth="sm" sx={{ mb: 4 }}>
-      <Paper
-        variant="outlined"
-        sx={{ my: { xs: 3, md: 6 }, p: { xs: 2, md: 3 } }}
+    <Box>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          flexWrap: "wrap",
+          rowGap: "10px",
+          columnGap: "15px",
+        }}
       >
+        {result && (
+          <Button variant="outlined" onClick={handleClear} disabled={merging}>
+            <RestartAltIcon sx={{ mr: 1 }} />
+            Reset
+          </Button>
+        )}
+        {!result && (
+          <React.Fragment>
+            <input
+              accept="image/*"
+              style={{ display: "none" }}
+              id="raised-button-file"
+              multiple
+              type="file"
+              onInput={handleUpload}
+            />
+            <label htmlFor="raised-button-file">
+              <Button
+                variant="outlined"
+                component="span"
+                disabled={uploading || merging}
+              >
+                {uploading ? (
+                  <CircularProgress size={24} sx={{ mr: 1 }} />
+                ) : (
+                  <AddIcon sx={{ mr: 1 }} />
+                )}
+                Add images
+              </Button>
+            </label>
+          </React.Fragment>
+        )}
+        {!result && files?.length > 1 && (
+          <React.Fragment>
+            <Button variant="outlined" onClick={handleClear} disabled={merging}>
+              <ClearIcon sx={{ mr: 1 }} />
+              Clear
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={handleInvert}
+              disabled={merging}
+            >
+              <SwapHorizIcon sx={{ mr: 1 }} />
+              Reverse
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleMerge}
+              disabled={merging}
+            >
+              {merging ? (
+                <CircularProgress size={24} sx={{ mr: 1 }} />
+              ) : (
+                <ViewAgendaIcon sx={{ mr: 1 }} />
+              )}
+              Stitch
+            </Button>
+          </React.Fragment>
+        )}
+      </Box>
+      {!result && files?.length > 1 && (
         <Box
           sx={{
             display: "flex",
-            justifyContent: "center",
-            flexWrap: "wrap",
+            flexDirection: "column",
             rowGap: "10px",
             columnGap: "15px",
+            mb: 2,
           }}
         >
-          {result && (
-            <Button variant="outlined" onClick={handleClear} disabled={merging}>
-              <RestartAltIcon sx={{ mr: 1 }} />
-              Reset
-            </Button>
-          )}
-          {!result && (
-            <React.Fragment>
-              <input
-                accept="image/*"
-                style={{ display: "none" }}
-                id="raised-button-file"
-                multiple
-                type="file"
-                onInput={handleUpload}
+          <hr />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={keepStats}
+                onChange={(e) => setKeepStats(e.target.checked)}
+                disabled={merging}
               />
-              <label htmlFor="raised-button-file">
-                <Button
-                  variant="outlined"
-                  component="span"
-                  disabled={uploading}
-                >
-                  {uploading ? (
-                    <CircularProgress size={24} sx={{ mr: 1 }} />
-                  ) : (
-                    <AddIcon sx={{ mr: 1 }} />
-                  )}
-                  Add images
-                </Button>
-              </label>
-            </React.Fragment>
-          )}
-          {!result && previewUrls?.length > 1 && (
-            <React.Fragment>
-              <Button
-                variant="outlined"
-                onClick={handleClear}
+            }
+            label="Keep all screen contents"
+          />
+          <FormControlLabel
+            control={
+              <Switch
+                checked={useSSD}
+                onChange={(e) => setUseSSD(e.target.checked)}
                 disabled={merging}
-              >
-                <ClearIcon sx={{ mr: 1 }} />
-                Clear
-              </Button>
-              <Button
-                variant="outlined"
-                onClick={handleInvert}
-                disabled={merging}
-              >
-                <SwapHorizIcon sx={{ mr: 1 }} />
-                Reverse
-              </Button>
-              <Button
-                variant="contained"
-                onClick={handleMerge}
-                disabled={merging}
-              >
-                {merging ? (
-                  <CircularProgress size={24} sx={{ mr: 1 }} />
-                ) : (
-                  <ViewAgendaIcon sx={{ mr: 1 }} />
-                )}
-                Stitch
-              </Button>
-            </React.Fragment>
-          )}
+              />
+            }
+            label="Stricter stitching function"
+          />
         </Box>
-        {!result && previewUrls?.length > 1 && (
-          <Box
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              rowGap: "10px",
-              columnGap: "15px",
-            }}
-          >
-            <hr />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={keepStats}
-                  onChange={(e) => setKeepStats(e.target.checked)}
-                />
-              }
-              label="Keep all screen contents"
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={useSSD}
-                  onChange={(e) => setUseSSD(e.target.checked)}
-                />
-              }
-              label="Stricter stitching function"
-            />
-          </Box>
-        )}
-        {renderBottomView()}
-      </Paper>
-      <Copyright />
-    </Container>
+      )}
+      {renderBottomView()}
+    </Box>
   );
 }
 

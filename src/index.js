@@ -1,13 +1,10 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import "jimp";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import AppBar from "@mui/material/AppBar";
-import Avatar from "@mui/material/Avatar";
-import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
+import Layout from "./Layout";
 import App from "./App";
 import About from "./About";
 import PrivacyPolicy from "./PrivacyPolicy";
@@ -22,58 +19,29 @@ const theme = createTheme();
 
 const router = createBrowserRouter([
   {
-    path: "/",
-    element: <App />,
-  },
-  {
-    path: "/about",
-    element: <About />,
-  },
-  {
-    path: "/privacy-policy",
-    element: <PrivacyPolicy />,
+    element: <Layout />,
+    children: [
+      {
+        path: "/",
+        element: <App />,
+      },
+      {
+        path: "/about",
+        element: <About />,
+      },
+      {
+        path: "/privacy-policy",
+        element: <PrivacyPolicy />,
+      },
+    ],
   },
 ]);
-
-const MyAppBar = () => {
-  return (
-    <AppBar
-      position="absolute"
-      color="default"
-      elevation={0}
-      sx={{
-        position: "relative",
-        borderBottom: (t) => `1px solid ${t.palette.divider}`,
-      }}
-    >
-      <Toolbar>
-        <Box
-          sx={{ display: "flex", alignItems: "center", cursor: "pointer" }}
-          onClick={() => {
-            window.location = "/";
-          }}
-        >
-          <Avatar
-            sx={{ mr: 1 }}
-            alt="UmaInfoMerger logo"
-            src="/logo256.png"
-            variant="square"
-          />
-          <Typography variant="h6" color="inherit" noWrap>
-            UmaStitcher!
-          </Typography>
-        </Box>
-      </Toolbar>
-    </AppBar>
-  );
-};
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <MyAppBar />
       <RouterProvider router={router} />
     </ThemeProvider>
   </React.StrictMode>
